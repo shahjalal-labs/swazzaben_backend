@@ -1,0 +1,223 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  userName     String
+  email        String     @unique
+  password     String
+  phone        String?
+  address      String?
+  profileImage String?    @default("https://i.ibb.co.com/nrs3FjM/images.png")
+  role         UserRole
+  status       UserStatus @default(Active)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  ChatRoom     ChatRoom[]
+
+  @@map("users")
+}
+
+model PendingUser {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userName  String
+  email     String   @unique
+  role      UserRole @default(User)
+  password  String
+  otpCode   String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("pendingUsers")
+}
+
+model Otp {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  otpCode   String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("otps")
+}
+
+enum UserStatus {
+  Active
+  Blocked
+  Deleted
+}
+
+enum UserRole {
+  Admin
+  User
+}
+
+model Loan {
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  hasBussiness  Boolean
+  fundingAmount Float
+  credit        String
+  useCase       String
+  hasBank       Boolean
+  status        LoanStatus @default(pending)
+  pdfUrl        String?
+  approvalFiles String[]
+
+  loanUserId String   @unique @db.ObjectId
+  loanUser   LoanUser @relation(fields: [loanUserId], references: [id])
+  businessId String   @unique @db.ObjectId
+  business   Business @relation(fields: [businessId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("loan")
+}
+
+enum LoanStatus {
+  selected
+  rejected
+  pending
+}
+
+model LoanUser {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  firstName String
+  lastName  String
+  email     String
+  phone     String
+
+  loanId Loan?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("loan_user")
+}
+
+model Business {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  businessName  String
+  startMonth    String
+  startDate     String
+  startYear     String
+  annualRevenue Float
+  legalEntity   String
+  industryType  String
+  dbaName       String
+  B_phone       String
+  B_address     String
+  EIN_code      String
+  B_city        String
+  B_state       String
+  B_zipCode     String
+
+  businessOwner BusinessOwner[]
+  loan          Loan?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("business")
+}
+
+model BusinessOwner {
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
+  FullName        String
+  SSN             String
+  month           String
+  day             String
+  year            String
+  email           String
+  phone           String
+  ownerParcentage String
+  address         String
+  city            String
+  state           String
+  zipcode         String
+  signature       String
+
+  businessId String   @db.ObjectId
+  business   Business @relation(fields: [businessId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("business-owner")
+}
+
+model Logo {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  logoUrl     String?
+  faveiconUrl String?
+}
+
+model socialLinks {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  facebookLink  String?
+  linekedInLink String?
+  instagramLink String?
+  twitterLink   String?
+}
+
+model ContactInformations {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  number  String?
+  email   String?
+  address String?
+}
+
+model PrivacyPolicy {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TermsAndConditions {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SecurityAwareness {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ChatRoom {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  clientId     String // guest user er unique id (browser theke generate kore pathabe)
+  adminId      String?   @db.ObjectId
+  admin        User?     @relation(fields: [adminId], references: [id])
+  messages     Message[]
+  isRestricted Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([clientId])
+  @@map("chat_rooms")
+}
+
+model Message {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  roomId      String   @db.ObjectId
+  room        ChatRoom @relation(fields: [roomId], references: [id])
+  senderType  String // 'admin' | 'client'
+  senderId    String? // if admin then adminId, else clientId
+  content     String
+  seenByAdmin Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@map("messages")
+}

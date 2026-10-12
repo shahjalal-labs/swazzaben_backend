@@ -1,0 +1,1198 @@
+{
+  "info": {
+    "_postman_id": "swazzaben-backend-api-collection",
+    "name": "Suazzaben Backend API Collection",
+    "description": "Complete Postman collection for Suazzaben Backend including Auth, User, Business Loan, Modifications, Message modules, and Admin Queues.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "YOUR_USER_ACCESS_TOKEN",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "YOUR_ADMIN_ACCESS_TOKEN",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "User Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "fcmToken",
+                "value": "OPTIONAL_FCM_TOKEN",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Log in as a standard user."
+          }
+        },
+        {
+          "name": "Admin Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "fcmToken",
+                "value": "OPTIONAL_FCM_TOKEN",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"adminPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/admin-login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "admin-login"]
+            },
+            "description": "Log in as an Administrator."
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "profile"]
+            },
+            "description": "Retrieve profile details of currently logged-in user."
+          }
+        },
+        {
+          "name": "Update User Location",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/update/user-location",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "update", "user-location"]
+            },
+            "description": "Update user location status."
+          }
+        },
+        {
+          "name": "Send Forgot Password OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/send-otp",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "send-otp"]
+            },
+            "description": "Request a reset OTP code via email."
+          }
+        },
+        {
+          "name": "Verify Forgot Password OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/verify-otp",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "verify-otp"]
+            },
+            "description": "Verify the reset OTP code."
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newPassword\": \"newSecretPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "reset-password"]
+            },
+            "description": "Reset user password after OTP verification."
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "profileImage",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "bodyData",
+                  "value": "{\n  \"userName\": \"John Updated\",\n  \"phone\": \"+1234567890\",\n  \"address\": \"123 Main St\"\n}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/set-profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "set-profile"]
+            },
+            "description": "Update logged-in user profile details and profile image."
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldPassword\": \"oldPassword123\",\n  \"newPassword\": \"newPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/change-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "change-password"]
+            },
+            "description": "Change password for logged-in user."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. User Management",
+      "item": [
+        {
+          "name": "Register Request (Create Pending User)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userName\": \"John Doe\",\n  \"email\": \"johndoe@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "request"]
+            },
+            "description": "Step 1 of registration: creates a pending user and emails OTP."
+          }
+        },
+        {
+          "name": "Resend Registration OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"johndoe@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/otp-resend",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "otp-resend"]
+            },
+            "description": "Resend OTP code for pending registration."
+          }
+        },
+        {
+          "name": "Verify OTP & Finalize Registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"johndoe@example.com\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "create"]
+            },
+            "description": "Step 2 of registration: verifies OTP and creates active user in database."
+          }
+        },
+        {
+          "name": "Social Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userName\": \"Jane Doe\",\n  \"email\": \"janedoe@gmail.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/social-login",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "social-login"]
+            },
+            "description": "Log in or register via social provider (Google, etc.)."
+          }
+        },
+        {
+          "name": "Get All Users (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users?page=1&limit=10&searchTerm=",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "searchTerm",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Retrieve list of all registered users (Admin permission required)."
+          }
+        },
+        {
+          "name": "Get Single User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/single/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "single", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "USER_ID_HERE"
+                }
+              ]
+            },
+            "description": "Get detailed info of a user by User ID."
+          }
+        },
+        {
+          "name": "Update User (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "profileImage",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "bodyData",
+                  "value": "{\n  \"userName\": \"Updated User Name\",\n  \"phone\": \"+1987654321\",\n  \"address\": \"456 Elm Street\"\n}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/update-user/:userId",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "update-user", ":userId"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "USER_ID_HERE"
+                }
+              ]
+            },
+            "description": "Update specific user details as Admin."
+          }
+        },
+        {
+          "name": "Delete User (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/delete-user/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "delete-user", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "USER_ID_HERE"
+                }
+              ]
+            },
+            "description": "Delete a user account by ID (Admin only)."
+          }
+        },
+        {
+          "name": "Delete My Account",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            },
+            "description": "Delete currently authenticated user account."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Business Loans",
+      "item": [
+        {
+          "name": "Create Business Loan Application",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "overviewPdf",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "approvalFiles",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "bodyData",
+                  "value": "{\n  \"hasBussiness\": true,\n  \"fundingAmount\": 50000,\n  \"credit\": \"Excellent\",\n  \"useCase\": \"Business Expansion\",\n  \"hasBank\": true,\n  \"loanUser\": {\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"phone\": \"+1234567890\"\n  },\n  \"business\": {\n    \"businessName\": \"Acme Enterprises\",\n    \"startMonth\": \"01\",\n    \"startDate\": \"15\",\n    \"startYear\": \"2020\",\n    \"annualRevenue\": 300000,\n    \"legalEntity\": \"LLC\",\n    \"industryType\": \"Technology\",\n    \"dbaName\": \"Acme Tech\",\n    \"B_phone\": \"+1987654321\",\n    \"B_address\": \"100 Innovation Way\",\n    \"EIN_code\": \"12-3456789\",\n    \"B_city\": \"San Francisco\",\n    \"B_state\": \"CA\",\n    \"B_zipCode\": \"94105\",\n    \"businessOwner\": [\n      {\n        \"FullName\": \"John Doe\",\n        \"SSN\": \"123-45-6789\",\n        \"month\": \"05\",\n        \"day\": \"20\",\n        \"year\": \"1985\",\n        \"email\": \"john.doe@example.com\",\n        \"phone\": \"+1234567890\",\n        \"ownerParcentage\": \"100%\",\n        \"address\": \"456 Residence Lane\",\n        \"city\": \"San Francisco\",\n        \"state\": \"CA\",\n        \"zipcode\": \"94105\",\n        \"signature\": \"https://example.com/signature.png\"\n      }\n    ]\n  }\n}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/business-loan",
+              "host": ["{{baseUrl}}"],
+              "path": ["business-loan"]
+            },
+            "description": "Submit a complete business loan application with files and structured JSON data."
+          }
+        },
+        {
+          "name": "Upload Documents",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "approvalFiles",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/business-loan/upload-documents",
+              "host": ["{{baseUrl}}"],
+              "path": ["business-loan", "upload-documents"]
+            },
+            "description": "Upload approval document files."
+          }
+        },
+        {
+          "name": "Upload Signatures",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "ownersSig",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/business-loan/upload-signatures",
+              "host": ["{{baseUrl}}"],
+              "path": ["business-loan", "upload-signatures"]
+            },
+            "description": "Upload owner signature files."
+          }
+        },
+        {
+          "name": "Get All Business Loans (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/business-loan",
+              "host": ["{{baseUrl}}"],
+              "path": ["business-loan"]
+            },
+            "description": "Get all submitted business loan applications."
+          }
+        },
+        {
+          "name": "Get Business Loan By ID (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/business-loan/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["business-loan", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "LOAN_ID_HERE"
+                }
+              ]
+            },
+            "description": "Get detailed business loan application info by ID."
+          }
+        },
+        {
+          "name": "Update Application Status (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"selected\",\n  \"feedback\": \"Application approved based on strong business performance.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/business-loan/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["business-loan", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "LOAN_ID_HERE"
+                }
+              ]
+            },
+            "description": "Update application status (selected or rejected) with feedback message."
+          }
+        },
+        {
+          "name": "Delete Business Loan (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/business-loan/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["business-loan", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "LOAN_ID_HERE"
+                }
+              ]
+            },
+            "description": "Delete a business loan record."
+          }
+        },
+        {
+          "name": "Send Email Inquiry From User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Jane Smith\",\n  \"email\": \"janesmith@example.com\",\n  \"phone\": \"+1122334455\",\n  \"message\": \"I am requesting information regarding merchant cash advances.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/business-loan/send-email",
+              "host": ["{{baseUrl}}"],
+              "path": ["business-loan", "send-email"]
+            },
+            "description": "Send loan inquiry email message to admin."
+          }
+        },
+        {
+          "name": "Get Admin Overview Stats (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/business-loan/admin-overview/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["business-loan", "admin-overview", "stats"]
+            },
+            "description": "Retrieve overview statistical data for loans dashboard."
+          }
+        },
+        {
+          "name": "Get Admin Overview Charts (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/business-loan/admin-overview/charts?filter=monthly",
+              "host": ["{{baseUrl}}"],
+              "path": ["business-loan", "admin-overview", "charts"],
+              "query": [
+                {
+                  "key": "filter",
+                  "value": "monthly",
+                  "description": "Options: daily | weekly | monthly | yearly"
+                }
+              ]
+            },
+            "description": "Retrieve analytics charts for loans dashboard."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Site Modifications & Settings",
+      "item": [
+        {
+          "name": "Save Logo & Favicon (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "logo",
+                  "type": "file",
+                  "src": ""
+                },
+                {
+                  "key": "faveicon",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/modifications/save-logo",
+              "host": ["{{baseUrl}}"],
+              "path": ["modifications", "save-logo"]
+            },
+            "description": "Upload site logo and favicon images."
+          }
+        },
+        {
+          "name": "Get Logo & Favicon",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/modifications/logo-favicon",
+              "host": ["{{baseUrl}}"],
+              "path": ["modifications", "logo-favicon"]
+            },
+            "description": "Get current logo and favicon URLs."
+          }
+        },
+        {
+          "name": "Save Social Links (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"facebookLink\": \"https://facebook.com/officialpage\",\n  \"linekedInLink\": \"https://linkedin.com/company/officialpage\",\n  \"instagramLink\": \"https://instagram.com/officialpage\",\n  \"twitterLink\": \"https://twitter.com/officialpage\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/modifications/save-social-links",
+              "host": ["{{baseUrl}}"],
+              "path": ["modifications", "save-social-links"]
+            },
+            "description": "Update official social media links."
+          }
+        },
+        {
+          "name": "Get Social Links",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/modifications/social-links",
+              "host": ["{{baseUrl}}"],
+              "path": ["modifications", "social-links"]
+            },
+            "description": "Retrieve active social media links."
+          }
+        },
+        {
+          "name": "Save Contact Information (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"number\": \"+1-800-555-0199\",\n  \"email\": \"support@company.com\",\n  \"address\": \"100 Business Parkway, Suite 500, City, State\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/modifications/contact-informations",
+              "host": ["{{baseUrl}}"],
+              "path": ["modifications", "contact-informations"]
+            },
+            "description": "Save contact number, email, and address."
+          }
+        },
+        {
+          "name": "Get Contact Information",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/modifications/contact-informations",
+              "host": ["{{baseUrl}}"],
+              "path": ["modifications", "contact-informations"]
+            },
+            "description": "Retrieve public contact information."
+          }
+        },
+        {
+          "name": "Save Privacy Policy (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"<h2>Privacy Policy</h2><p>Your privacy is important to us...</p>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/modifications/privacy-policy",
+              "host": ["{{baseUrl}}"],
+              "path": ["modifications", "privacy-policy"]
+            },
+            "description": "Update Privacy Policy page content."
+          }
+        },
+        {
+          "name": "Get Privacy Policy",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/modifications/privacy-policy",
+              "host": ["{{baseUrl}}"],
+              "path": ["modifications", "privacy-policy"]
+            },
+            "description": "Retrieve current Privacy Policy content."
+          }
+        },
+        {
+          "name": "Save Terms and Conditions (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"<h2>Terms & Conditions</h2><p>Please read these terms carefully...</p>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/modifications/terms-and-conditions",
+              "host": ["{{baseUrl}}"],
+              "path": ["modifications", "terms-and-conditions"]
+            },
+            "description": "Update Terms and Conditions page content."
+          }
+        },
+        {
+          "name": "Get Terms and Conditions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/modifications/terms-and-conditions",
+              "host": ["{{baseUrl}}"],
+              "path": ["modifications", "terms-and-conditions"]
+            },
+            "description": "Retrieve current Terms and Conditions content."
+          }
+        },
+        {
+          "name": "Save Security Awareness (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"<h2>Security Awareness</h2><p>Tips to keep your account secure...</p>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/modifications/security-awareness",
+              "host": ["{{baseUrl}}"],
+              "path": ["modifications", "security-awareness"]
+            },
+            "description": "Update Security Awareness page content."
+          }
+        },
+        {
+          "name": "Get Security Awareness",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/modifications/security-awareness",
+              "host": ["{{baseUrl}}"],
+              "path": ["modifications", "security-awareness"]
+            },
+            "description": "Retrieve current Security Awareness content."
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Chat & Messaging",
+      "item": [
+        {
+          "name": "Generate File URL for Chat",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "files",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/messages/generate-url",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "generate-url"]
+            },
+            "description": "Upload a file to get a shareable media URL for messaging."
+          }
+        },
+        {
+          "name": "Get Personal Messages (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/messages/personal-messages/:roomId",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "personal-messages", ":roomId"],
+              "variable": [
+                {
+                  "key": "roomId",
+                  "value": "ROOM_ID_HERE"
+                }
+              ]
+            },
+            "description": "Retrieve messages in a chat room for Admin."
+          }
+        },
+        {
+          "name": "Get Personal Messages for Client/User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/messages/user/personal-messages/:clientId",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "user", "personal-messages", ":clientId"],
+              "variable": [
+                {
+                  "key": "clientId",
+                  "value": "CLIENT_ID_HERE"
+                }
+              ]
+            },
+            "description": "Retrieve messages for client using unique client ID."
+          }
+        },
+        {
+          "name": "Get All Chat Rooms (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/messages/all-rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "all-rooms"]
+            },
+            "description": "Get list of all active chat rooms."
+          }
+        },
+        {
+          "name": "Mark Messages As Seen (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/messages/mark-seen/:roomId",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "mark-seen", ":roomId"],
+              "variable": [
+                {
+                  "key": "roomId",
+                  "value": "ROOM_ID_HERE"
+                }
+              ]
+            },
+            "description": "Mark unread messages in a room as seen by Admin."
+          }
+        },
+        {
+          "name": "Restrict User Chat (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isRestricted\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/messages/restrict-user/:roomId",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "restrict-user", ":roomId"],
+              "variable": [
+                {
+                  "key": "roomId",
+                  "value": "ROOM_ID_HERE"
+                }
+              ]
+            },
+            "description": "Restrict or unrestrict a chat room."
+          }
+        },
+        {
+          "name": "Check User Restriction Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/messages/check-restriction/:clientId",
+              "host": ["{{baseUrl}}"],
+              "path": ["messages", "check-restriction", ":clientId"],
+              "variable": [
+                {
+                  "key": "clientId",
+                  "value": "CLIENT_ID_HERE"
+                }
+              ]
+            },
+            "description": "Check whether a client is restricted from sending messages."
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Administration & Dashboards",
+      "item": [
+        {
+          "name": "BullBoard Queue Management UI",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "supersecret",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "admin",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/admin/queues",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["admin", "queues"]
+            },
+            "description": "BullBoard dashboard for viewing BullMQ email workers and task queues."
+          }
+        },
+        {
+          "name": "Admin HTML Portal",
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "password",
+                  "value": "supersecret",
+                  "type": "string"
+                },
+                {
+                  "key": "username",
+                  "value": "admin",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/admin.html",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["admin.html"]
+            },
+            "description": "Basic Auth protected admin landing page."
+          }
+        }
+      ]
+    }
+  ]
+}
